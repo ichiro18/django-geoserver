@@ -5,7 +5,9 @@ volumes:
 
 services:
   db:
-    image: postgres
+    build:
+      context: .
+      dockerfile: provision/application/database/Dockerfile
     container_name: ${APP_NAME}__database
     env_file:
       - .env
