@@ -1,16 +1,32 @@
 version: '3'
 
+volumes:
+  db_data_local: {}
+
 services:
   db:
     image: postgres
+    container_name: ${APP_NAME}__database
+    env_file:
+      - .env
+      - .envs/database.env
+    volumes:
+      - db_data_local:/var/lib/postgresql/data
+    ports:
+      - "55432:5432"
+
   web:
     build:
       context: .
       dockerfile: provision/application/django/Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    container_name: ${APP_NAME}__web
+    depends_on:
+      - db
+    env_file:
+      - .env
+      - .envs/database.env
     volumes:
       - .:/app
     ports:
       - "8000:8000"
-    depends_on:
-      - db
+    command: python manage.py runserver 0.0.0.0:8000
