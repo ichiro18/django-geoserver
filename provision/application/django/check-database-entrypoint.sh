@@ -3,27 +3,27 @@ set -e
 
 ERRORS=0
 
-if [ -z "${POSTGRES_DB}" ]; then
-    echo "ERROR: POSTGRES_DB env variable is empty"
+if [[ -z ${DATABASE_DB} ]]; then
+    echo "ERROR: DATABASE_DB env variable is empty"
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ -z "${POSTGRES_USER}" ]; then
-    echo "ERROR: POSTGRES_USER env variable is empty"
+if [[ -z ${DATABASE_USER} ]]; then
+    echo "ERROR: DATABASE_USER env variable is empty"
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ -z "${POSTGRES_PASSWORD}" ]; then
-    echo "ERROR: POSTGRES_PASSWORD env variable is empty"
+if [[ -z ${DATABASE_PASSWORD} ]]; then
+    echo "ERROR: DATABASE_PASSWORD env variable is empty"
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ -z "${POSTGRES_HOST}" ]; then
+if [[ -z ${POSTGRES_HOST} ]]; then
     echo "ERROR: POSTGRES_HOST env variable is empty"
     ERRORS=$((ERRORS + 1))
 fi
 
-if [ -z "${POSTGRES_PORT}" ]; then
+if [[ -z ${POSTGRES_PORT} ]]; then
     echo "ERROR: POSTGRES_PORT env variable is empty"
     ERRORS=$((ERRORS + 1))
 fi
@@ -41,9 +41,9 @@ import psycopg2
 
 try:
     psycopg2.connect(
-        dbname="${POSTGRES_DB}",
-        user="${POSTGRES_USER}",
-        password="${POSTGRES_PASSWORD}",
+        dbname="${DATABASE_DB}",
+        user="${DATABASE_USER}",
+        password="${DATABASE_PASSWORD}",
         host="${POSTGRES_HOST}",
         port="${POSTGRES_PORT}",
     )
@@ -57,9 +57,9 @@ END
 echo "------"
 echo "GEOSERVER_DATABASE_HOST=${POSTGRES_HOST}"
 echo "GEOSERVER_DATABASE_PORT=${POSTGRES_PORT}"
-echo "GEOSERVER_DATABASE=${POSTGRES_DB}"
-echo "GEOSERVER_DATABASE_USER=${POSTGRES_USER}"
-echo "GEOSERVER_DATABASE_PASSWORD=${POSTGRES_PASSWORD}"
+echo "GEOSERVER_DATABASE=${DATABASE_DB}"
+echo "GEOSERVER_DATABASE_USER=${DATABASE_USER}"
+echo "GEOSERVER_DATABASE_PASSWORD=${DATABASE_PASSWORD}"
 echo "------"
 
 until database_ready; do
@@ -69,6 +69,6 @@ done
 >&2 echo 'Database connection successful!'
 
 
-export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+export DATABASE_URL="postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${DATABASE_DB}"
 
 exec "$@"
