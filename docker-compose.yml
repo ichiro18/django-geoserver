@@ -2,6 +2,7 @@ version: '3'
 
 volumes:
   db_data_local: {}
+  geoserver_data_local: {}
 
 services:
   db:
@@ -30,5 +31,28 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "80:8000"
     command: python manage.py runserver 0.0.0.0:8000
+
+  geoserver_data:
+    image: geonode/geoserver_data
+    container_name: ${APP_NAME}__geoserver-data
+    volumes:
+      - geoserver_data_local:/geoserver_data/data
+    command: /bin/true
+
+  geoserver:
+    image: geonode/geoserver
+    container_name: ${APP_NAME}__geoserver
+    env_file:
+      - .envs/geoserver.env
+    depends_on:
+      - geoserver_data
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - geoserver_data_local:/geoserver_data/data
+      - ./runtime/geoserver:/geoserver_data/data/temp_data
+    ports:
+      - "8000:8080"
+    links:
+      - db:postgis
