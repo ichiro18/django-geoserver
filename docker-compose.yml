@@ -4,6 +4,10 @@ volumes:
   db_data_local: {}
   geoserver_data_local: {}
 
+networks:
+  geoserver_network:
+    driver: bridge
+
 services:
   db:
     build:
@@ -17,6 +21,8 @@ services:
       - db_data_local:/var/lib/postgresql/data
     ports:
       - "55432:5432"
+    networks:
+      - geoserver_network
 
   web:
     build:
@@ -25,6 +31,7 @@ services:
     container_name: ${APP_NAME}__web
     depends_on:
       - db
+      - geoserver
     env_file:
       - .env
       - .envs/database.env
@@ -33,6 +40,8 @@ services:
     ports:
       - "80:8000"
     command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - geoserver_network
 
   geoserver_data:
     image: geonode/geoserver_data
@@ -51,8 +60,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - geoserver_data_local:/geoserver_data/data
-      - ./runtime/geoserver:/geoserver_data/data/temp_data
+      - ./runtime/django_geoserver:/geoserver_data/data/temp_data
     ports:
-      - "8000:8080"
+      - "8080:8080"
     links:
       - db:postgis
+    networks:
+      - geoserver_network

@@ -6,23 +6,61 @@
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
    crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.css" />
      <!-- Make sure you put this AFTER Leaflet's CSS -->
  <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
    crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.min.js"></script>
+    <script src="https://unpkg.com/leaflet-wfst@latest/dist/leaflet-wfst.src.js"></script>
 </head>
 <body>
 <style>
-    html, body, #mapid{
+    html, body{
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
     }
+    .debug-panel{
+        display: flex;
+        padding: 10px;
+        max-width: 100%;
+        max-height: 10%;
+    }
+    #mapid{
+        width: 100%;
+        height: 90%;
+    }
 </style>
+    <div class="debug-panel">{{ testVar }}</div>
      <div id="mapid"></div>
 <script type="text/javascript">
     var map = L.map('mapid').setView([40.730610, -73.935242], 13);
+
+    // add wfs
+    /* var wfst = new L.WFST({
+        url: 'http://localhost:8000/geoserver/ows',
+        typeNS: 'test_draw',
+        typeName: 'test_draw',
+        style: {
+          color: 'blue',
+          weight: 2,
+          fill: false
+        }
+    })
+    */
+    var wfst = new L.WFST({
+        url: 'http://geoserver.ics.perm.ru/geoserver/ows',
+        typeNS: 'ics',
+        typeName: 'perm_water_polygon',
+        crs: L.CRS.EPSG4326,
+        geometryField: 'ogr_geometry',
+        style: {
+          color: 'blue',
+          weight: 2
+        }
+    });
 
     var basemaps = {
         Esri : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -43,13 +81,31 @@
             transparent: true,
             version: '1.1.1'
         }),
+        draw: wfst
     };
 
     L.control.layers(basemaps, overlays).addTo(map);
 
     basemaps.Esri.addTo(map);
-    overlays.building.addTo(map);
-    overlays.roads.addTo(map);
+    wfst.addTo(map)
+        .once('load', function () {
+            map.fitBounds(wfst)
+        });
+
+    // add draw
+    map.pm.addControls({
+        position: 'topleft',
+        drawPolyline: false,
+        drawCircle: false,
+        drawMarker: false,
+        drawRectangle: false,
+    });
+
+    map.on('pm:create', function (e) {
+        if (e.shape === "Poly"){
+            wfst.save();
+        }
+    })
 </script>
 </body>
 </html>
