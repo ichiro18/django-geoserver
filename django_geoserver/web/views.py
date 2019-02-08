@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from geoserver.catalog import Catalog
-import requests
 
 # Create your views here.
 def index(request):
@@ -13,4 +12,4 @@ def index(request):
     # req = session.get("http://geoserver:8080/geoserver/rest/about/version")
     # print(all_layers)
     testVar = "hello"
-    return render(request, 'index.html', {'testVar' : req[0].name})
+    return render(request, 'web/index.html', {'testVar' : req})

@@ -40,7 +40,7 @@
 
     // add wfs
     /* var wfst = new L.WFST({
-        url: 'http://localhost:8000/geoserver/ows',
+        url: 'http://geoserver:8080/geoserver/ows',
         typeNS: 'test_draw',
         typeName: 'test_draw',
         style: {
@@ -50,17 +50,6 @@
         }
     })
     */
-    var wfst = new L.WFST({
-        url: 'http://geoserver.ics.perm.ru/geoserver/ows',
-        typeNS: 'ics',
-        typeName: 'perm_water_polygon',
-        crs: L.CRS.EPSG4326,
-        geometryField: 'ogr_geometry',
-        style: {
-          color: 'blue',
-          weight: 2
-        }
-    });
 
     var basemaps = {
         Esri : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -69,19 +58,11 @@
     };
 
     var overlays = {
-        building: L.tileLayer.wms('http://localhost:8000/geoserver/nyc/wms', {
-            layers: 'nyc:nyc_buildings',
-            format: 'image/png8',
-            transparent: true,
-            version: '1.1.1'
-        }),
-        roads: L.tileLayer.wms('http://localhost:8000/geoserver/nyc_roads/wms', {
+        roads: L.tileLayer.wms('http://localhost:8080/geoserver/wms', {
             layers: 'nyc_roads:nyc_roads',
-            format: 'image/png8',
+            format: 'image/png',
             transparent: true,
-            version: '1.1.1'
         }),
-        draw: wfst
     };
 
     L.control.layers(basemaps, overlays).addTo(map);
