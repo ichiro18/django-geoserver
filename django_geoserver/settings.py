@@ -27,7 +27,11 @@ SECRET_KEY = 'cs%dyjyem!&trsv%wg4%4mnux#=sr497*)*b=gvw6!u7e-$a&8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    # TODO: добавлять домен через .env
+    'geoprizma.local'
+]
+
 
 
 # Application definition
@@ -39,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'web'
+    'django_geoserver.web',
+    'django_geoserver.geoserver',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +62,9 @@ ROOT_URLCONF = 'django_geoserver.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            'web/templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,3 +127,38 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# GEOSERVER
+# ------------------------------------------------------------------------------
+GEOSERVER_CONFIG = {
+    'BACKEND': 'django_geoserver.geoserver',
+    'LOCATION': 'http://localhost:8080/geoserver/',
+    'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+    'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+    # PUBLIC_LOCATION needs to be kept like this because in dev mode
+    # the proxy won't work and the integration tests will fail
+    # the entire block has to be overridden in the local_settings
+    'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/',
+    'USER': 'admin',
+    'PASSWORD': 'geoserver',
+    'MAPFISH_PRINT_ENABLED': True,
+    'PRINT_NG_ENABLED': True,
+    'GEONODE_SECURITY_ENABLED': True,
+    'GEOFENCE_SECURITY_ENABLED': False,
+    'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
+    'GEOGIG_ENABLED': False,
+    'WMST_ENABLED': False,
+    'BACKEND_WRITE_ENABLED': True,
+    'WPS_ENABLED': False,
+    # Set to name of database in DATABASES dictionary to enable
+    # 'datastore',
+    'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE',''),
+    'PG_GEOGIG': False,
+    # 'CACHE': ".cache"  # local cache file to for HTTP requests
+    'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '60'))  # number of seconds to allow for HTTP requests
+}
+
+DEFAULT_WORKSPACE = ''
+
+# A tuple of hosts the proxy can send requests to.
+PROXY_ALLOWED_HOSTS = ()
