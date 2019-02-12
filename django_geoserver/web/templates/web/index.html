@@ -38,7 +38,6 @@
 <script type="text/javascript">
     var map = L.map('mapid').setView([40.730610, -73.935242], 13);
 
-    // add wfs
     var basemaps = {
         Esri : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
@@ -69,7 +68,8 @@
 
     map.on('pm:create', function (e) {
         if (e.shape === "Poly"){
-            console.log('POLY CREATED!!!')
+            console.log('POLY CREATED!!!');
+            console.log(e);
         }
     })
 </script>
