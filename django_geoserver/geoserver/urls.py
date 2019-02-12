@@ -7,11 +7,6 @@ urlpatterns = [
     # OWS Endpoints
     re_path(
         r'^wms',
-        views.geoserver_protected_proxy,
-        dict(
-            proxy_path='/gs/wms',
-            downstream_path='wms',
-            workspace='nyc_roads'
-        ),
+        views.wms_endpoint,
         name='wms_endpoint'),
 ]

@@ -33,24 +33,12 @@
         height: 90%;
     }
 </style>
-    <div class="debug-panel">{{ testVar }}</div>
+    <div class="debug-panel"><pre lang="text/xml">{{ testVar }}</pre></div>
      <div id="mapid"></div>
 <script type="text/javascript">
     var map = L.map('mapid').setView([40.730610, -73.935242], 13);
 
     // add wfs
-    /* var wfst = new L.WFST({
-        url: 'http://geoserver:8080/geoserver/ows',
-        typeNS: 'test_draw',
-        typeName: 'test_draw',
-        style: {
-          color: 'blue',
-          weight: 2,
-          fill: false
-        }
-    })
-    */
-
     var basemaps = {
         Esri : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
@@ -58,8 +46,9 @@
     };
 
     var overlays = {
-        roads: L.tileLayer.wms('http://localhost:8080/geoserver/wms', {
-            layers: 'nyc_roads:nyc_roads',
+        //roads: L.tileLayer.wms('http://geoprizma.local/gs/wms', {
+        states: L.tileLayer.wms('http://localhost:8080/geoserver/wms', {
+            layers: 'topp:states',
             format: 'image/png',
             transparent: true,
         }),
@@ -68,10 +57,6 @@
     L.control.layers(basemaps, overlays).addTo(map);
 
     basemaps.Esri.addTo(map);
-    wfst.addTo(map)
-        .once('load', function () {
-            map.fitBounds(wfst)
-        });
 
     // add draw
     map.pm.addControls({
@@ -84,7 +69,7 @@
 
     map.on('pm:create', function (e) {
         if (e.shape === "Poly"){
-            wfst.save();
+            console.log('POLY CREATED!!!')
         }
     })
 </script>
