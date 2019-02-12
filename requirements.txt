@@ -6,4 +6,5 @@ django-environ >= 0.4.5                                                         
 
 # ForestGIS
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-gsconfig-py3>=1.0.7                                                                                       # Geoserver Wrapper (http://boundlessgeo.github.io/gsconfig/)
+# gsconfig-py3>=1.0.7                                                                                     # Geoserver API Wrapper (http://boundlessgeo.github.io/gsconfig/)
+# OWSLib>=0.17.1                                                                                          # OGC interface (https://geopython.github.io/OWSLib/)

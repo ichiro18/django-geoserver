@@ -17,6 +17,8 @@ ROOT_DIR = environ.Path(__file__) - 3 # (project-root/config/settings/base.py - 
 
 env = environ.Env()
 
+environ.Env.read_env()
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -32,7 +34,7 @@ ALLOWED_HOSTS = [
     'geoprizma.local'
 ]
 
-
+SITEURL = "http://geoprizma.local"
 
 # Application definition
 
@@ -132,7 +134,7 @@ STATIC_URL = '/static/'
 # ------------------------------------------------------------------------------
 GEOSERVER_CONFIG = {
     'BACKEND': 'django_geoserver.geoserver',
-    'LOCATION': 'http://localhost:8080/geoserver/',
+    'LOCATION': 'http://geoserver:8080/geoserver/',
     'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
     'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
     # PUBLIC_LOCATION needs to be kept like this because in dev mode
