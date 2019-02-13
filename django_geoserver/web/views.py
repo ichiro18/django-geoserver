@@ -17,9 +17,6 @@ def index(request):
     # wms
     wms = WebMapService("http://geoserver:8080/geoserver/wms")
     wms_services = list(wms.contents)
-    # wfs
-    wfs = WebFeatureService("http://geoserver:8080/geoserver/wfs", version="1.1.0", username="admin", password="geoserver")
-    wfs_services = list(wfs.contents)
     # result
     testVar = "hello"
     return render(request, 'web/index.html', {'testVar' : testVar})
