@@ -9,4 +9,9 @@ urlpatterns = [
         r'^wms',
         views.wms_endpoint,
         name='wms_endpoint'),
+
+    re_path(
+        r'^wfs',
+        views.wfs_endpoint,
+        name='wfs_endpoint'),
 ]

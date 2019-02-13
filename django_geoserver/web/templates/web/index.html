@@ -12,7 +12,6 @@
    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
    crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.min.js"></script>
-    <script src="https://unpkg.com/leaflet-wfst@latest/dist/leaflet-wfst.src.js"></script>
 </head>
 <body>
 <style>
@@ -51,6 +50,11 @@
             format: 'image/png',
             transparent: true,
         }),
+        buildings: L.tileLayer.wms('http://localhost:8080/geoserver/wms', {
+            layers: 'test:nyc_buildings',
+            format: 'image/png',
+            transparent: true,
+        }),
     };
 
     L.control.layers(basemaps, overlays).addTo(map);
@@ -66,12 +70,16 @@
         drawRectangle: false,
     });
 
+    // create
     map.on('pm:create', function (e) {
-        if (e.shape === "Poly"){
-            console.log('POLY CREATED!!!');
-            console.log(e);
-        }
+        console.log(e)
+    });
+
+    // delete
+    map.on('layerremove', function (e) {
+        console.log(e);
     })
+
 </script>
 </body>
 </html>
