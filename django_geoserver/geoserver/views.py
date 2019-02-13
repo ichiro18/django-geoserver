@@ -28,7 +28,7 @@ def wfs_endpoint(request):
                     contents = service.contents
                     # check typename
                     if typename in list(contents):
-                        res = service.getfeature(typename=typename, outputFormat="json")
+                        res = service.getfeature(typename=typename, outputFormat="json", srsname="EPSG:4326")
                         return HttpResponse(res.read(), status="200", content_type="application/json")
                     else:
                         return HttpResponse("layer not found", status=404)
