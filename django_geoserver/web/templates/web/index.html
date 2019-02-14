@@ -13,6 +13,7 @@
             crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/leaflet-wfst@latest/dist/leaflet-wfst.min.js"></script>
 </head>
 <body>
 <style>
@@ -36,7 +37,10 @@
     }
 </style>
 <div class="debug-panel">
-    <pre lang="text/xml">{{ testVar }}</pre>
+    <pre lang="text/xml">
+        {{ testVar }}
+        <button onclick="buttonClick()">save</button>
+    </pre>
 </div>
 <div id="mapid"></div>
 <script type="text/javascript">
@@ -76,15 +80,14 @@
             drawRectangle: false,
         });
     }
-
-    function getGeojsonLayer() {
+    function getDrawingLayer() {
         axios
             .get('/gs/wfs', {
                 params: {
                     service: "WFS",
                     version: "1.1.0",
                     request: "GetFeature",
-                    typename: "test:nyc_buildings"
+                    typename: "test:drawing"
                 }
             })
             .then(function (res) {
@@ -98,7 +101,7 @@
                     },
                     onEachFeature: function (feature, layer) {
                         layer.on('click', function () {
-                            alert(feature.id)
+                            alert(feature.properties.custom_value + " - bin:" + feature.properties.bin)
                         })
                     }
                 });
@@ -110,17 +113,79 @@
             })
     }
     createLayers();
-    getGeojsonLayer()
+    getDrawingLayer();
 
+    /*
+    * ---------------- WFS-T ----------------
+     */
+
+
+    /*
+    * ---------------- CRUD ----------------
+     */
+    var layer,
+        layer_attributes = {
+            geometry_type: null,
+            coords: [],
+            bin: null,
+            custom_value: null,
+            crs: L.CRS.EPSG4326.code,
+        };
     // create
     map.on('pm:create', function (e) {
-        console.log(e)
+        if (e.shape === "Poly"){
+            layer = e.layer;
+            var geojson = layer.toGeoJSON();
+            if (geojson.geometry){
+                layer_attributes.geometry_type = geojson.geometry.type;
+                layer_attributes.coords = geojson.geometry.coordinates;
+            }
+        }
     });
 
-    // delete
+    function createDrawedLayer(attr) {
+        axios({
+            method: 'post',
+            url: '/gs/wfs',
+            data: {
+                service: "WFS",
+                version: "1.1.0",
+                request: "Transaction",
+                typename: "test:drawing",
+                transactionType: "Insert",
+                the_geom: layer.toGml(L.CRS.EPSG4326),
+                layer_attributes: attr,
+            },
+            headers: {
+                "content-type": "application/json"
+            }
+        })
+            .then(function (res) {
+                console.log(res)
+            })
+            .catch(function (error) {
+                console.error(error)
+            })
+    }
+
+    /* delete
     map.on('layerremove', function (e) {
-        console.log(e);
-    })
+        console.log();
+    });
+    */
+
+
+    function buttonClick() {
+        if (layer_attributes.bin === null) {
+            layer_attributes.bin = prompt("BIN: 1 or 0");
+        }
+        if (layer_attributes.custom_value === null) {
+            layer_attributes.custom_value = prompt("custom value")
+        }
+        console.log(layer_attributes);
+        console.log('--- request ---');
+        createDrawedLayer(layer_attributes);
+    }
 
 </script>
 </body>

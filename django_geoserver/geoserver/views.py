@@ -1,5 +1,13 @@
 from django.http import HttpResponse
-from owslib import wfs
+from django.views.decorators.csrf import csrf_exempt
+from owslib import wfs, wps
+import json
+from xml.etree import ElementTree
+from xml.etree.ElementTree import Element, SubElement
+from xml.dom import minidom
+import requests
+
+
 
 
 def wms_endpoint(request):
@@ -7,6 +15,7 @@ def wms_endpoint(request):
     return HttpResponse(res, status=200)
 
 
+@csrf_exempt
 def wfs_endpoint(request):
     res = "HELLO"
     # TODO: check auth & permissions
@@ -39,7 +48,18 @@ def wfs_endpoint(request):
             res = service.getcapabilities()
             return HttpResponse(res.read(), status=200, content_type="text/xml")
     elif request.method == "POST":
-        res = "POST"
+        data = json.loads(request.body.decode('utf-8'))
+        if not data and data["service"] == "WFS" and not data["version"] == "1.1.0":
+            return HttpResponse("bad request", status=404)
+        else:
+            # if Transaction
+            if data["request"] == "Transaction":
+                # Insert
+                if data["transactionType"] == "Insert":
+                    transactionRequest = _create_gml_transaction_insert(data)
+                    transactionResponse = requests.post("http://geoserver:8080/geoserver/wfs", transactionRequest)
+                    return HttpResponse(transactionResponse.content, status=transactionResponse.status_code)
+
     else:
         return HttpResponse("bad request", status=404)
     # feature = service.getfeature(typename="	test:nyc_buildings", outputFormat="json")
@@ -47,3 +67,86 @@ def wfs_endpoint(request):
 
     # res = feature.info
     return HttpResponse(res, status=200)
+
+
+def _prettify(elem):
+    rough_string = ElementTree.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="  ")
+
+
+def _create_gml_transaction_insert(data):
+    # NameSpaces
+    xmlns_wfs = "http://www.opengis.net/wfs"
+    xmlns_gml = "http://www.opengis.net/gml"
+    xmlns_xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    # TODO: interactive
+    xmlns_workspace = "http://www.tcartadata.com/test"
+    xsi_schemaLocation = "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/WFS-transaction.xsd http://www.tcartadata.com/test http://geoserver:8080/geoserver/wfs/DescribeFeatureType?typename=test:drawing"
+
+    ElementTree.register_namespace("wfs", xmlns_wfs)
+    ElementTree.register_namespace("xsi", xmlns_xsi)
+    ElementTree.register_namespace("gml", xmlns_gml)
+    ElementTree.register_namespace("test", xmlns_workspace)
+
+    # XmlDOM
+    transaction = Element("{http://www.opengis.net/wfs}Transaction")
+    transaction.set("service", data["service"])
+    transaction.set("version", data["version"])
+    transaction.set("{http://www.w3.org/2001/XMLSchema-instance}schemaLocation", xsi_schemaLocation)
+    insert = SubElement(transaction, "{http://www.opengis.net/wfs}Insert")
+    drawing = SubElement(insert, "{http://www.tcartadata.com/test}drawing")
+
+    bin = SubElement(drawing, "{http://www.tcartadata.com/test}bin")
+    bin.text = data["layer_attributes"]["bin"]
+
+    custom_value = SubElement(drawing, "{http://www.tcartadata.com/test}custom_value")
+    custom_value.text = data["layer_attributes"]["custom_value"]
+
+    # The geom
+    the_geom = SubElement(drawing, "{http://www.tcartadata.com/test}the_geom")
+
+    # If Polygon
+    if data["layer_attributes"]["geometry_type"] == "Polygon":
+        polygon = SubElement(the_geom, "{http://www.opengis.net/gml}Polygon")
+        polygon.set("srsName", data["layer_attributes"]["crs"])
+        polygon.set("srsDimension", "2")
+
+        exterior = SubElement(polygon, "{http://www.opengis.net/gml}exterior")
+        LinearRing = SubElement(exterior, "{http://www.opengis.net/gml}LinearRing")
+        LinearRing.set("srsDimension", "2")
+
+        posList = SubElement(LinearRing, "{http://www.opengis.net/gml}posList")
+
+        coords = data["layer_attributes"]["coords"]
+        res = ""
+        for point in coords[0]:
+            res += str(point[0]) + " " + str(point[1]) + " "
+        posList.text = res
+
+    return _prettify(transaction)
+
+
+# def _describeFeatureType(data):
+#     # NameSpaces
+#     xmlns_wfs = "http://www.opengis.net/wfs"
+#     ElementTree.register_namespace("wfs", xmlns_wfs)
+#
+#     describeFeatureType = Element("{http://www.opengis.net/wfs}DescribeFeatureType")
+#     describeFeatureType.set("service", data["service"])
+#     describeFeatureType.set("version", data["version"])
+#
+#     typeName = SubElement(describeFeatureType, "TypeName")
+#     typeName.text = data["typename"]
+#
+#     return _prettify(describeFeatureType)
+#
+#
+# def _get_namespace_and_fields(response):
+#     root = ElementTree.fromstring(response)
+#     namespace = root.attrib["targetNamespace"]
+#     sequence = root.findall('sequence')
+#     fields = []
+#     for field in sequence:
+#         fields.append(fields)
+#     return fields

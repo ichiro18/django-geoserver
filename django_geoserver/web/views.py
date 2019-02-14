@@ -18,5 +18,5 @@ def index(request):
     wms = WebMapService("http://geoserver:8080/geoserver/wms")
     wms_services = list(wms.contents)
     # result
-    testVar = "hello"
+    testVar = workspace.href
     return render(request, 'web/index.html', {'testVar' : testVar})
