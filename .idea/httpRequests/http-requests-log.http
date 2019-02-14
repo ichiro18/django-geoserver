@@ -1,0 +1,441 @@
+POST http://geoprizma.local/gs/wfs
+Content-Type: application/json
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+###
+
+POST http://geoprizma.local/gs/wfs
+Content-Type: application/json
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020354.500.html
+
+###
+
+POST http://geoprizma.local/gs/wfs
+Content-Type: application/json
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020335.500.html
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020243.500.html
+
+###
+
+GET http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020236.200.xml
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020230.500.html
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020216.500.html
+
+###
+
+POST http://geoprizma.local/gs/wfs
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\request_payload.json
+--null--
+
+<> 2019-02-14T020133.500.html
+
+###
+
+POST http://localhost:8080/geoserver/test/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-14T123053.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/test/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-14T122617.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/test/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-14T121743.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/test/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_GetFeature.xml
+
+<> 2019-02-14T121642.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/test/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-14T121610.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/test/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_DescribeFeatureType.xml
+
+<> 2019-02-14T121543.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T072232.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T072152.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T071837.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_GetFeature.xml
+
+<> 2019-02-13T071831.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T071550.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_GetFeature.xml
+
+<> 2019-02-13T071528.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T071256.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_GetFeature.xml
+
+<> 2019-02-13T071014.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_GetFeature.xml
+
+<> 2019-02-13T070947.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T070503.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T070320.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T070226.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_DescribeFeatureType.xml
+
+<> 2019-02-13T065700.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/ows
+
+--null
+
+
+< D:\Projects\ForestGIS\django-geoserver\wfs_DescribeFeatureType.xml
+--null--
+
+<> 2019-02-13T065425.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs?idgen=GenerateNew
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T063128.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_DescribeFeatureType.xml
+
+<> 2019-02-13T062959.200.xml
+
+###
+
+GET http://localhost:8080/geoserver/wfs?service=wfs&version=1.1.0&request=GetFeature&typeNames=test:drawing
+
+<> 2019-02-13T062750.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_DescribeFeatureType.xml
+
+<> 2019-02-13T062302.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T061111.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T060629.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T055828.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T055541.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T055251.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T055154.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T054831.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T054636.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T054545.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T054442.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T054131.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T054033.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T053918.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T053904.200.xml
+
+###
+
+POST http://localhost:8080/geoserver/wfs
+
+< D:/Projects/ForestGIS/django-geoserver/wfs_transaction_insert_example.xml
+
+<> 2019-02-13T053829.200.xml
+
+###
+
