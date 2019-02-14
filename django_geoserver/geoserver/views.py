@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from owslib import wfs, wps
+from owslib import wfs
 import json
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement
@@ -60,12 +60,18 @@ def wfs_endpoint(request):
                     transactionResponse = requests.post("http://geoserver:8080/geoserver/wfs", transactionRequest)
                     return HttpResponse(transactionResponse.content, status=transactionResponse.status_code)
 
+                # Update
+                if data["transactionType"] == "Update":
+                    # if GEOM
+                    if data["layer_attributes"]["coords"]:
+                        transactionRequest = _create_gml_transaction_update(data)
+                        transactionResponse = requests.post("http://geoserver:8080/geoserver/wfs", transactionRequest)
+                        return HttpResponse(transactionResponse.content, content_type='text/xml', status=transactionResponse.status_code)
+
+
     else:
         return HttpResponse("bad request", status=404)
-    # feature = service.getfeature(typename="	test:nyc_buildings", outputFormat="json")
-    # feature = service.getfeature(typename="test:drawing")
 
-    # res = feature.info
     return HttpResponse(res, status=200)
 
 
@@ -123,6 +129,60 @@ def _create_gml_transaction_insert(data):
         for point in coords[0]:
             res += str(point[0]) + " " + str(point[1]) + " "
         posList.text = res
+
+    return _prettify(transaction)
+
+
+def _create_gml_transaction_update(data):
+    # NameSpaces
+    xmlns_wfs = "http://www.opengis.net/wfs"
+    xmlns_gml = "http://www.opengis.net/gml"
+    xmlns_ogc = "http://www.opengis.net/ogc"
+    xmlns_xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    xmlns_workspace = "http://www.tcartadata.com/test"
+    xsi_schemaLocation = "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
+
+    ElementTree.register_namespace("wfs", xmlns_wfs)
+    ElementTree.register_namespace("xsi", xmlns_xsi)
+    ElementTree.register_namespace("gml", xmlns_gml)
+    ElementTree.register_namespace("test", xmlns_workspace)
+
+    # XmlDOM
+    transaction = Element("{http://www.opengis.net/wfs}Transaction")
+
+    transaction.set("service", data["service"])
+    transaction.set("version", data["version"])
+    transaction.set("{http://www.w3.org/2001/XMLSchema-instance}schemaLocation", xsi_schemaLocation)
+
+    update = SubElement(transaction, "{http://www.opengis.net/wfs}Update")
+    update.set("typeName", data["typename"])
+
+    Property = SubElement(update, "{http://www.opengis.net/wfs}Property")
+
+    Name = SubElement(Property, "{http://www.opengis.net/wfs}Name")
+    Name.text = "the_geom"
+    Value = SubElement(Property, "{http://www.opengis.net/wfs}Value")
+
+    # MultiSurface = SubElement(Value, "{http://www.opengis.net/gml}MultiSurface")
+    # surfaceMember = SubElement(MultiSurface, "{http://www.opengis.net/gml}surfaceMember")
+    Polygon = SubElement(Value, "{http://www.opengis.net/gml}Polygon")
+    Polygon.set("srsName", data["layer_attributes"]["crs"])
+    Polygon.set("srsDimension", "2")
+    exterior = SubElement(Polygon, "{http://www.opengis.net/gml}exterior")
+    LinearRing = SubElement(exterior, "{http://www.opengis.net/gml}LinearRing")
+    LinearRing.set("srsDimension", "2")
+    posList = SubElement(LinearRing, "{http://www.opengis.net/gml}posList")
+    coords = data["layer_attributes"]["coords"]
+    res = ""
+    for point in coords[0]:
+        res += str(point[0]) + " " + str(point[1]) + " "
+    # res = res[:-1]
+    posList.text = res
+
+    # Filter
+    Filter = SubElement(update, "{http://www.opengis.net/ogc}Filter")
+    FeatureId = SubElement(Filter, "{http://www.opengis.net/ogc}FeatureId")
+    FeatureId.set("fid", data["layer_attributes"]["fid"])
 
     return _prettify(transaction)
 
