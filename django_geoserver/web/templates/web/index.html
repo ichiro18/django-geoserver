@@ -38,8 +38,8 @@
 </style>
 <div class="debug-panel">
     <pre lang="text/xml">
-        {{ testVar }}
-        <button onclick="buttonClick()">save</button>
+        <button onclick="createLayer()">create</button>
+        <button onclick="updateLayer()">update</button>
     </pre>
 </div>
 <div id="mapid"></div>
@@ -102,6 +102,15 @@
                     onEachFeature: function (feature, layer) {
                         layer.on('click', function () {
                             alert(feature.properties.custom_value + " - bin:" + feature.properties.bin)
+                        });
+                        layer.on('pm:edit', function (e) {
+                            let editedLayer = e.target;
+                            if (e.target.feature.geometry.type === "Polygon"){
+                                layer_attributes.fid = editedLayer.feature.id;
+                                var geojson = editedLayer.toGeoJSON();
+                                layer_attributes.geometry_type = geojson.geometry.type;
+                                layer_attributes.coords = geojson.geometry.coordinates;
+                            }
                         })
                     }
                 });
@@ -124,7 +133,16 @@
     * ---------------- CRUD ----------------
      */
     var layer,
+        default_layer_attributes = {
+            fid: null,
+            geometry_type: null,
+            coords: [],
+            bin: null,
+            custom_value: null,
+            crs: L.CRS.EPSG4326.code,
+        },
         layer_attributes = {
+            fid: null,
             geometry_type: null,
             coords: [],
             bin: null,
@@ -153,21 +171,48 @@
                 request: "Transaction",
                 typename: "test:drawing",
                 transactionType: "Insert",
-                the_geom: layer.toGml(L.CRS.EPSG4326),
                 layer_attributes: attr,
             },
             headers: {
                 "content-type": "application/json"
             }
         })
-            .then(function (res) {
-                console.log(res)
+            .then(function () {
+                layer_attributes = default_layer_attributes
             })
             .catch(function (error) {
                 console.error(error)
             })
     }
 
+    // update
+    function updateGeometryLayer(attrs) {
+        axios({
+            method: 'post',
+            url: '/gs/wfs',
+            data: {
+                service: "WFS",
+                version: "1.1.0",
+                request: "Transaction",
+                typename: "test:drawing",
+                transactionType: "Update",
+                layer_attributes: attrs,
+            },
+            headers: {
+                "content-type": "application/json"
+            }
+        })
+            .then(function () {
+                // layer_attributes = default_layer_attributes
+            })
+            .catch(function (error) {
+                console.error(error)
+            })
+    }
+
+    function updateLayer() {
+        updateGeometryLayer(layer_attributes)
+    }
     /* delete
     map.on('layerremove', function (e) {
         console.log();
@@ -175,15 +220,13 @@
     */
 
 
-    function buttonClick() {
+    function createLayer() {
         if (layer_attributes.bin === null) {
             layer_attributes.bin = prompt("BIN: 1 or 0");
         }
         if (layer_attributes.custom_value === null) {
             layer_attributes.custom_value = prompt("custom value")
         }
-        console.log(layer_attributes);
-        console.log('--- request ---');
         createDrawedLayer(layer_attributes);
     }
 
