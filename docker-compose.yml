@@ -1,0 +1,54 @@
+version: '3'
+
+volumes:
+  db_data_local: {}
+  geoserver_data_local: {}
+
+networks:
+  geoserver_network:
+    driver: bridge
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: provision/application/database/Dockerfile
+    container_name: ${APP_NAME}__database
+    env_file:
+      - .env
+      - .envs/database.env
+    volumes:
+      - db_data_local:/var/lib/postgresql/data
+    ports:
+      - "55432:5432"
+    networks:
+      - geoserver_network
+
+  web:
+    build:
+      context: .
+      dockerfile: provision/application/django/Dockerfile
+    container_name: ${APP_NAME}__web
+    depends_on:
+      - db
+      - geoserver
+    env_file:
+      - .env
+      - .envs/database.env
+    volumes:
+      - .:/app
+    ports:
+      - "80:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - geoserver_network
+
+  geoserver:
+    image: ilyamachetto/geoserver-base
+    container_name: ${APP_NAME}__geoserver
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    networks:
+      - geoserver_network

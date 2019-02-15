@@ -1,0 +1,25 @@
+<wfs:Transaction
+        service="WFS"
+        version="1.1.0"
+        xmlns:wfs="http://www.opengis.net/wfs"
+        xmlns:gml="http://www.opengis.net/gml"
+        xmlns:test="http://www.tcartadata.com/test"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/WFS-transaction.xsd http://www.tcartadata.com/test http://geoserver:8080/geoserver/wfs/DescribeFeatureType?typename=test:drawing"
+>
+    <wfs:Insert>
+        <test:drawing>
+            <test:the_geom>
+                <gml:Polygon srsName="EPSG:4326" srsDimension="2">
+                    <gml:exterior>
+                        <gml:LinearRing srsDimension="2">
+                            <gml:posList>-73.92305374145509 40.76376847995145 -73.92940521240236 40.75635608935909
+                                -73.90520095825197 40.74764222257364 -73.92305374145509 40.76376847995145
+                            </gml:posList>
+                        </gml:LinearRing>
+                    </gml:exterior>
+                </gml:Polygon>
+            </test:the_geom>
+        </test:drawing>
+    </wfs:Insert>
+</wfs:Transaction>

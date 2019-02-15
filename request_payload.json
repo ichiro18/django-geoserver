@@ -1,0 +1,20 @@
+{
+    "service": "WFS",
+    "version": "1.1.0",
+    "request": "Transaction",
+    "typename": "test:drawing",
+    "transactionType": "Insert",
+    "the_geom": "",
+    "layer_attributes": {
+      "bin": "1",
+      "crs": "EPSG:4326",
+      "custom_value": "second polygon",
+      "geometry_type": "Polygon",
+      "coords": [
+        [-73.912668, 40.760063],
+        [-73.908377, 40.767476],
+        [-73.920479, 40.769525],
+        [-73.912668, 40.760063]
+      ]
+    }
+}

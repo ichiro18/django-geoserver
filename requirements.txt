@@ -1,0 +1,12 @@
+# Core
+# ------------------------------------------------------------------------------
+Django >= 2.1.1                                                                                         # Django framework (https://www.djangoproject.com/)
+psycopg2 >= 2.7.5 --no-binary psycopg2                                                                  # PostgreSQL adapter (https://github.com/psycopg/psycopg2)
+django-environ >= 0.4.5                                                                                 # Env for Django (https://github.com/joke2k/django-environ)
+requests >= 2.21.0                                                                                      # HTTP for Humans (http://docs.python-requests.org/en/master/)
+
+
+# ForestGIS
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+gsconfig-py3>=1.0.7                                                                                     # Geoserver API Wrapper (http://boundlessgeo.github.io/gsconfig/)
+OWSLib>=0.17.1                                                                                          # OGC interface (https://geopython.github.io/OWSLib/)
