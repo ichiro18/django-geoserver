@@ -68,7 +68,13 @@ def wfs_endpoint(request):
                         transactionResponse = requests.post("http://geoserver:8080/geoserver/wfs", transactionRequest)
                         return HttpResponse(transactionResponse.content, content_type='text/xml', status=transactionResponse.status_code)
 
-
+                # Delete
+                if data["transactionType"] == "Delete":
+                    # if ID
+                    if data["layer_attributes"]["fid"]:
+                        transactionRequest = _create_gml_transaction_delete(data)
+                        transactionResponse = requests.post("http://geoserver:8080/geoserver/wfs", transactionRequest)
+                        return HttpResponse(transactionResponse, content_type='text/xml', status=transactionResponse.status_code)
     else:
         return HttpResponse("bad request", status=404)
 
@@ -186,6 +192,31 @@ def _create_gml_transaction_update(data):
 
     return _prettify(transaction)
 
+
+def _create_gml_transaction_delete(data):
+    # NameSpaces
+    xmlns_wfs = "http://www.opengis.net/wfs"
+    xmlns_ogc = "http://www.opengis.net/ogc"
+    xmlns_cdf = "http://www.opengis.net/cite/data"
+    xmlns_workspace = "http://www.tcartadata.com/test"
+
+    ElementTree.register_namespace("wfs", xmlns_wfs)
+    ElementTree.register_namespace("ogc", xmlns_ogc)
+
+    # XmlDOM
+    transaction = Element("{http://www.opengis.net/wfs}Transaction")
+    transaction.set("service", data["service"])
+    transaction.set("version", data["version"])
+
+    delete = SubElement(transaction, "{http://www.opengis.net/wfs}Delete")
+    delete.set("typeName", data["typename"])
+
+    # Filter
+    Filter = SubElement(delete, "{http://www.opengis.net/ogc}Filter")
+    FeatureId = SubElement(Filter, "{http://www.opengis.net/ogc}FeatureId")
+    FeatureId.set("fid", data["layer_attributes"]["fid"])
+
+    return _prettify(transaction)
 
 # def _describeFeatureType(data):
 #     # NameSpaces
