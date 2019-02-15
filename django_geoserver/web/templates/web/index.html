@@ -37,10 +37,13 @@
     }
 </style>
 <div class="debug-panel">
-    <pre lang="text/xml">
-        <button onclick="createLayer()">create</button>
-        <button onclick="updateLayer()">update</button>
+    <pre>
+        {{ testVar }}
     </pre>
+    <button onclick="infoLayer()">info</button>
+    <button onclick="createLayer()">create</button>
+    <button onclick="updateLayer()">update</button>
+    <button onclick="deleteLayer()">delete</button>
 </div>
 <div id="mapid"></div>
 <script type="text/javascript">
@@ -80,6 +83,16 @@
             drawRectangle: false,
         });
     }
+
+    var selectedLayer;
+    var defaultStyle = {
+        color: "blue",
+        weight: 1
+    };
+    var selectedStyle = {
+        color: "red",
+        weight: 1
+    };
     function getDrawingLayer() {
         axios
             .get('/gs/wfs', {
@@ -94,14 +107,15 @@
                 var data = res.data;
                 var geojson = L.geoJSON(data, {
                     style: function () {
-                        return {
-                            color: "blue",
-                            weight: 1
-                        }
+                        return defaultStyle
                     },
                     onEachFeature: function (feature, layer) {
                         layer.on('click', function () {
-                            alert(feature.properties.custom_value + " - bin:" + feature.properties.bin)
+                            if (selectedLayer){
+                                selectedLayer.setStyle(defaultStyle);
+                            }
+                            selectedLayer = layer;
+                            layer.setStyle(selectedStyle)
                         });
                         layer.on('pm:edit', function (e) {
                             let editedLayer = e.target;
@@ -178,7 +192,8 @@
             }
         })
             .then(function () {
-                layer_attributes = default_layer_attributes
+                layer_attributes = default_layer_attributes;
+                window.location.reload()
             })
             .catch(function (error) {
                 console.error(error)
@@ -203,22 +218,30 @@
             }
         })
             .then(function () {
-                // layer_attributes = default_layer_attributes
+                layer_attributes = default_layer_attributes;
+                window.location.reload()
             })
             .catch(function (error) {
                 console.error(error)
             })
     }
 
+    // Actions
+    function infoLayer() {
+        if (selectedLayer) {
+            var feature = selectedLayer.feature;
+            alert(feature.properties.custom_value + " - bin:" + feature.properties.bin);
+        } else {
+            alert("layer not selected")
+        }
+    }
     function updateLayer() {
         updateGeometryLayer(layer_attributes)
     }
-    /* delete
+    // delete
     map.on('layerremove', function (e) {
-        console.log();
+        console.log(e);
     });
-    */
-
 
     function createLayer() {
         if (layer_attributes.bin === null) {
@@ -230,6 +253,34 @@
         createDrawedLayer(layer_attributes);
     }
 
+    function deleteLayer() {
+        console.log(selectedLayer);
+        if (selectedLayer) {
+            layer_attributes.fid = selectedLayer.feature.id;
+            axios({
+                method: 'post',
+                url: '/gs/wfs',
+                data: {
+                    service: "WFS",
+                    version: "1.1.0",
+                    request: "Transaction",
+                    typename: "test:drawing",
+                    transactionType: "Delete",
+                    layer_attributes: layer_attributes,
+                },
+                headers: {
+                    "content-type": "application/json"
+                }
+            })
+                .then(function () {
+                    layer_attributes = default_layer_attributes;
+                    window.location.reload()
+                })
+                .catch(function (error) {
+                    console.error(error)
+                })
+        }
+    }
 </script>
 </body>
 </html>
