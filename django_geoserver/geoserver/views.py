@@ -9,10 +9,20 @@ import requests
 
 
 
-
+@csrf_exempt
 def wms_endpoint(request):
-    res = "HELLO"
-    return HttpResponse(res, status=200)
+    if request.GET:
+        # check params
+        if not request.GET["service"] == "WMS":
+            return HttpResponse("bad request", status=404)
+        if not request.GET["version"] == "1.1.1":
+            return HttpResponse("bad request", status=404)
+
+        if request.GET["request"] == "GetMap":
+            res = requests.get("http://geoserver:8080/geoserver/wms", request.GET)
+            format = 'image/png' or request.GET["format"]
+            return HttpResponse(res, status=res.status_code, content_type=format)
+    return HttpResponse("bad request", status=404)
 
 
 @csrf_exempt
