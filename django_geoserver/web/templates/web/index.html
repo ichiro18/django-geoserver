@@ -13,7 +13,6 @@
             crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/leaflet-wfst@latest/dist/leaflet-wfst.min.js"></script>
 </head>
 <body>
 <style>
@@ -47,7 +46,12 @@
 </div>
 <div id="mapid"></div>
 <script type="text/javascript">
-    var map = L.map('mapid').setView([40.730610, -73.935242], 13);
+    var map = L.map('mapid', {
+        center: [40.759951571454245, -73.98053884506227],
+        zoom: 18,
+        zoomSnap: 0.1,
+        maxZoom: 30,
+    });
 
     function createLayers() {
         var basemaps = {
@@ -58,12 +62,12 @@
 
         var overlays = {
             //roads: L.tileLayer.wms('http://geoprizma.local/gs/wms', {
-            states: L.tileLayer.wms('http://geoprizma.local/gs/wms', {
+            states: L.tileLayer.wms('/gs/wms', {
                 layers: 'topp:states',
                 format: 'image/png',
                 transparent: true,
             }),
-            buildings: L.tileLayer.wms('http://localhost:8080/geoserver/wms', {
+            buildings: L.tileLayer.wms('/gs/wms', {
                 layers: 'test:nyc_buildings',
                 format: 'image/png',
                 transparent: true,
@@ -73,6 +77,8 @@
         L.control.layers(basemaps, overlays).addTo(map);
 
         basemaps.Esri.addTo(map);
+        overlays.buildings.addTo(map);
+
 
         // add draw
         map.pm.addControls({
@@ -129,7 +135,6 @@
                     }
                 });
                 var layer = geojson.addTo(map);
-                map.fitBounds(layer.getBounds());
             })
             .catch(function (error) {
                 console.error(error)
@@ -139,9 +144,59 @@
     getDrawingLayer();
 
     /*
-    * ---------------- WFS-T ----------------
+    * ---------------- WMS ----------------
      */
 
+    var circle = L.circle([0,0], {radius: 30, color: 'red'});
+    circle.addTo(map);
+    var snapFeatures = L.geoJSON();
+    snapFeatures.addTo(map);
+    var latlng;
+
+    map.on("mousemove", function (e) {
+        latlng = e.latlng;
+    });
+
+    window.addEventListener("keyup", function (e) {
+        console.log(e);
+        if (e.keyCode === 18) {
+            circle.setLatLng(latlng);
+
+            // on alt
+            var snapBound = circle.getBounds();
+            var snapBbox = snapBound.toBBoxString();
+
+            axios
+                .get('/gs/wfs', {
+                    params: {
+                        service: "WFS",
+                        version: "1.1.0",
+                        request: "GetFeature",
+                        typename: "test:nyc_buildings",
+                        bbox: snapBbox,
+                    }
+                })
+                .then(function (res) {
+                    var data = res.data;
+                    if (data.totalFeatures > 0) {
+                        for (var i = 0; i < data.totalFeatures; i++) {
+                            var feature = data.features[i];
+                            var snapArray = snapFeatures.toGeoJSON().features;
+                            //console.log(feature);
+                            //console.log(snapArray);
+                            if (!snapArray.find(function (x) {
+                                return x.id === feature.id
+                            })) {
+                                snapFeatures.addData(feature);
+                            }
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    console.error(error)
+                })
+        }
+    }, false);
 
     /*
     * ---------------- CRUD ----------------
@@ -238,10 +293,6 @@
     function updateLayer() {
         updateGeometryLayer(layer_attributes)
     }
-    // delete
-    map.on('layerremove', function (e) {
-        console.log(e);
-    });
 
     function createLayer() {
         if (layer_attributes.bin === null) {

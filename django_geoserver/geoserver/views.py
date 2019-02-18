@@ -1,16 +1,18 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotModified
 from django.views.decorators.csrf import csrf_exempt
-from owslib import wfs
+from owslib import wfs, wms
 import json
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement
 from xml.dom import minidom
 import requests
+from ast import literal_eval
 
 
 
 @csrf_exempt
 def wms_endpoint(request):
+    # TODO: check auth & permissions
     if request.GET:
         # check params
         if not request.GET["service"] == "WMS":
@@ -18,10 +20,19 @@ def wms_endpoint(request):
         if not request.GET["version"] == "1.1.1":
             return HttpResponse("bad request", status=404)
 
+        # GetMap method
         if request.GET["request"] == "GetMap":
             res = requests.get("http://geoserver:8080/geoserver/wms", request.GET)
             format = 'image/png' or request.GET["format"]
             return HttpResponse(res, status=res.status_code, content_type=format)
+
+        if request.GET["request"] == "GetFeatureInfo":
+            res = requests.get("http://geoserver:8080/geoserver/wms", request.GET)
+            return HttpResponse(res, status=res.status_code,)
+            # service = wfs.WebFeatureService("http://geoserver:8080/geoserver/wfs", version="1.1.0", username="admin", password="geoserver")
+            # res = service.getfeature(typename=request.GET["layers"], bbox=(request.GET["bbox"]))
+            # return HttpResponse(request.GET, status=200)
+
     return HttpResponse("bad request", status=404)
 
 
@@ -47,8 +58,15 @@ def wfs_endpoint(request):
                     contents = service.contents
                     # check typename
                     if typename in list(contents):
-                        res = service.getfeature(typename=typename, outputFormat="json", srsname="EPSG:4326")
-                        return HttpResponse(res.read(), status="200", content_type="application/json")
+                        if "bbox" in request.GET:
+                            res = service.getfeature(typename=typename, outputFormat="json", srsname="EPSG:4326", bbox=literal_eval(request.GET["bbox"]))
+                            # res = requests.get("http://geoserver:8080/geoserver/wfs", request.GET)
+                            response = HttpResponse(res.read(), status="200")
+                            response['Cache-Control'] = 'private, max-age=60'
+                            return response
+                        else:
+                            res = service.getfeature(typename=typename, outputFormat="json", srsname="EPSG:4326")
+                            return HttpResponse(res.read(), status="200", content_type="application/json")
                     else:
                         return HttpResponse("layer not found", status=404)
                 else:
@@ -86,7 +104,7 @@ def wfs_endpoint(request):
                         transactionResponse = requests.post("http://geoserver:8080/geoserver/wfs", transactionRequest)
                         return HttpResponse(transactionResponse, content_type='text/xml', status=transactionResponse.status_code)
     else:
-        return HttpResponse("bad request", status=404)
+        return HttpResponse("bad req2uest", status=404)
 
     return HttpResponse(res, status=200)
 
